@@ -7,14 +7,20 @@ if($_SESSION['verified']=="true")
 	$servername = "111.118.215.168";
 	$username = "aaditikc_rastm_n";
 	$password = "#2^7rQgr~&mi";
+    $dbname = "aaditikc_rastm_paper";
+    /*
+    $servername = "localhost";
+	$username = "root";
+	$password = "";
 	$dbname = "aaditikc_rastm_paper";
+	*/
 	// Create connection
 	$con = mysqli_connect($servername, $username, $password, $dbname);
 	// Check connection
 	if (!$con) {
 		die("Connection failed: " . mysqli_connect_error());
 	}
-	$query = "SELECT researcher_info.r_name,submissions.title,submissions.no_of_pages,submissions.submission_track,submissions.No_of_authors,submissions.submitted_file_name FROM submissions  INNER JOIN researcher_info 
+	$query = "SELECT researcher_info.r_name,researcher_info.email,submissions.submission_time,submissions.title,submissions.no_of_pages,submissions.submission_track,submissions.No_of_authors,submissions.submitted_file_name FROM submissions  INNER JOIN researcher_info 
 	ON researcher_info.researcher_id = submissions.researcher_id;";
 	/* $query2 = "SELECT * FROM `researcher_info`;"; */
 	$result = mysqli_query($con,$query) or die(mysqli_error($con));
@@ -34,6 +40,7 @@ else
 	<link href="css/bootstrap.min.css" rel="stylesheet">
 	<link href="css/font-awesome.min.css" rel="stylesheet">
 	<link href="css/styles.css" rel="stylesheet">
+	<link href="css/datepicker.css" rel="stylesheet">
 	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
 
 
@@ -43,46 +50,7 @@ else
 	<script src="js/html5shiv.js"></script>
 	<script src="js/respond.min.js"></script>
 	<![endif]-->
-	<script>
-    function marksolved(id,rev)
-	{
-		document.getElementById("preloader").style.display = "block";
-		$.ajax({
-             url:"marksolved.php?id=" +id+ "&rev=" + rev, //the page containing php script
-             type: "get", //request type,
-             success:function(){
-							 document.getElementById("preloader").style.display = "none"
-							 Swal.fire(
-									'success!',
-									'order marked as Delivered!',
-									'success'
-								)
 
-							window.location.reload();
-            }
-          });
-	}
-	function markpending(id,rev)
-	{
-		document.getElementById("preloader").style.display="block";
-		$.ajax({
-             url:"markpending.php?id=" +id+ "&rev=" + rev, //the page containing php script
-             type: "get", //request type,
-             success:function(){
-
-						 		document.getElementById("preloader").style.display="none";
-								Swal.fire(
-								   'success!',
-								   'order marked as Pending!',
-								   'success'
-								 )
-
-							window.location.reload();
-            }
-          });
-
-	}
-    </script>
     <!-- Javscript Auto Refresh-->
     <script type="text/JavaScript">
          <!--
@@ -90,7 +58,16 @@ else
                setTimeout("location.reload(true);", t);
             }
          //-->
-     </script>
+	 </script>
+	 <style>
+		 .tt{
+			 color: black;
+		 }
+		 .tt:hover{
+			 background: #30a5ff; 
+		 }
+		 
+	</style>
 </head>
 <body onload="JavaScript:AutoRefresh(1500000);">
 	<nav class="navbar navbar-custom navbar-fixed-top" role="navigation">
@@ -114,10 +91,20 @@ else
 
 		<div class="divider"></div>
 		<br>
-			<li style="padding:2%;"><a href="#" class="btn btn-success"><em class="fa fa-plane">&nbsp;</em><strong>Submission Tracker</strong></a></li>
-			<!-- <li style="padding:2%;"><a href="#" class="btn btn-warning"><em class="fa fa-plane fa-flip-vertical">&nbsp;</em><strong> Plane Landing</strong></a></li>
-			<li style="padding:2%;"><a href="#" class="btn btn-danger"><em class="fa fa-exclamation-triangle">&nbsp;</em><strong> Emergency</strong></a></li> -->
-
+		
+			<li style="padding:2%;"><a href="admindashboard.php" class="btn btn-success"><em class="fa fa-clock-o">&nbsp;</em><strong>Submission Tracker</strong></a></li>
+			<li  style="padding:2%;"><button style="width:100%; padding: 5% 0 5% 0;" id="T1" value="Engineering" class="btn btn-info tt"><em class="fa fa-cogs">&nbsp;</em><strong> Engineering Track</strong></a></li>
+			<li  style="padding:2%;"><button style="width:100%; padding: 5% 0 5% 0;"id="T2" value="Science" class="btn btn-info tt"><em class="fa fa-flask">&nbsp;</em><strong> Science Track</strong></button></li>
+			<li style="padding:2%;"><button style="width:100%; padding: 5% 0 5% 0;" id="T3" value="Management"  class="btn btn-info tt"><em class="fa fa-area-chart">&nbsp;</em><strong> Management Track</strong></button></li>
+		<div class="divider"></div>
+		<br>
+		<div class="input-group input-group-sm mb-3 " style="width:100%;">
+			<input type="date" class="form-control" id="date-input">
+			
+		</div>
+		<div style="width:100%;">
+				<button style="width:100%;" id="T4" class="btn btn-info tt" type="button">Search By Date</button>
+		</div>
 		</ul>
 	</div><!--/.sidebar-->
 
@@ -174,23 +161,27 @@ else
 						</div>
 					</div>
 				</div>
-			</div><!--/.row-->
-		</div> -->
+			</div>/.row-->
+		</div> 
 	</div>	<!--/.main-->
 
 	<!-- Table View Start -->
-
+	
 	<div class="container table-responsive pull-right col-sm-9 col-xs-10 col-md-10">
 		<!--<h2 style="text-align:center">Manage Complains</h2>-->
-	<table class="table table-hover">
+		<div style="padding: 0 2% 3% 0; float: right;" >
+			<button id="downloadall"   class="btn btn-warning"><em class="fa fa-download">&nbsp;</em><strong> Download All</strong></button>
+		</div>
+	<table class="table table-hover" id="info-table">
 		<thead>
 			<tr>
 				<th class="text-center">Sr. No.</th>
 				<th>Name of Author</th>
-				<th class="text-center">Submission Name</th>
-				<th class="text-center">No of Pages</th>
-				<th class="text-center">Submission Track</th>
-				<th class="text-center">No of Authors</th>
+				<th class="text-center">Paper Title</th>
+				<th class="text-center">Paper Track</th>
+				<th class="text-center">Author's Email</th>
+				<th class="text-center">No of Authors</th>				
+				<th class="text-center">Submission Time</th>
 				<th class="text-center">Action</th>
 			</tr>
 		</thead>
@@ -245,16 +236,18 @@ else
 				<td class="text-center">'.($i+1).'</td>
 				<td>'.$row['r_name'].'</td>
 				<td class="text-center">'.$row['title'].'</button></td>
-				<td class="text-center">'.$row['no_of_pages'].'</td>
 				<td class="text-center">'.$row['submission_track'].'</td>
+				<td class="text-center">'.$row['email'].'</td>
 				<td class="text-center">'.$row['No_of_authors'].'</td>
-				<td class="text-center"><a class="btn btn-outline-danger btn-circle" href="http://52.206.184.26/paper/Uploads/'.$row['submitted_file_name'].'"><i class="fa fa-download"></i></a></td>
+				<td class="text-center">'.$row['submission_time'].'</td>
+				<td class="text-center"><a class="btn btn-outline-danger btn-circle" target="_blank" href="http://52.206.184.26/paper/Uploads/'.$row['submitted_file_name'].'"><i class="fa fa-download"></i></a></td>
 				';
 				echo '
 
 			</tr>
 
 		';
+		$i++;
 	}	
 
 	?>
@@ -280,4 +273,74 @@ else
 			 </div>
 
 </body>
+<script>
+/*function getdatabytrack(a){
+	ajax data -> a,
+	method get 
+	sucess(
+
+		table append
+	)
+	
+}
+*/
+$("#T1").click(function(){
+	track=$("#T1").val();
+	
+  $.ajax({url: "SearchTrackApi.php", method: "get", data: {trackName : track},success: function(result){
+    $("tbody").html(result);
+  }});
+});
+
+$("#T2").click(function(){
+	track=$("#T2").val();
+	
+  $.ajax({url: "SearchTrackApi.php", method: "get", data: {trackName : track},success: function(result){
+    $("tbody").html(result);
+  }});
+});
+
+$("#T3").click(function(){
+	track=$("#T3").val();
+	
+  $.ajax({url: "SearchTrackApi.php", method: "get", data: {trackName : track},success: function(result){
+    $("tbody").html(result);
+  }});
+});
+
+
+$('#T4').on('click', function(){
+  var date = new Date($('#date-input').val());
+  day = date.getDate();
+  month = date.getMonth() + 1;
+  year = date.getFullYear();
+  if (month < 10){ month = "0" + month;}
+        if (day < 10) {day = "0" + day;}
+        if(month=="13")
+        {
+          month = "01";
+          year = date.getFullYear()+1;
+        }
+  td=[year, month,day ].join('-');
+  
+  $.ajax({url: "SearchDateApi.php", method: "get", data: {trackDate : td},success: function(result){
+    $("tbody").html(result);
+  }});
+});
+
+ TableData = new Array();
+    
+
+$("#downloadall").click(function(){
+	TableData = new Array();
+	$('tbody tr a').each(function(row){
+		TableData[row]=$(this).attr('href');
+		$(this).trigger('click');
+	});
+
+	alert(TableData);
+});
+
+
+</script>
 </html>

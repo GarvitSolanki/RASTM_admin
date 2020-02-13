@@ -20,7 +20,7 @@ if($_SESSION['verified']=="true")
 	if (!$con) {
 		die("Connection failed: " . mysqli_connect_error());
 	}
-	$query = "SELECT researcher_info.r_name,researcher_info.email,submissions.submission_time,submissions.title,submissions.no_of_pages,submissions.submission_track,submissions.No_of_authors,submissions.submitted_file_name FROM submissions  INNER JOIN researcher_info 
+	$query = "SELECT researcher_info.r_name,researcher_info.email,submissions.submission_time,submissions.submission_id,submissions.title,submissions.no_of_pages,submissions.submission_track,submissions.No_of_authors,submissions.submitted_file_name FROM submissions  INNER JOIN researcher_info 
 	ON researcher_info.researcher_id = submissions.researcher_id;";
 	/* $query2 = "SELECT * FROM `researcher_info`;"; */
 	$result = mysqli_query($con,$query) or die(mysqli_error($con));
@@ -87,12 +87,12 @@ else
 	<div id="sidebar-collapse" class="col-sm-3 col-lg-2 sidebar">
 
 		<ul class="nav menu">
-			<li class="active"><a href="www.rastm.i3lab.in"><em class="fa fa-dashboard">&nbsp;</em> Dashboard</a></li>
+			
 
 		<div class="divider"></div>
 		<br>
 		
-			<li style="padding:2%;"><a href="admindashboard.php" class="btn btn-success"><em class="fa fa-clock-o">&nbsp;</em><strong>Submission Tracker</strong></a></li>
+			<li style="padding:2%;"><a href="admindashboard.php" class="btn btn-success"><em class="fa fa-clock-o">&nbsp;</em><strong>All Submissions</strong></a></li>
 			<li  style="padding:2%;"><button style="width:100%; padding: 5% 0 5% 0;" id="T1" value="Engineering" class="btn btn-info tt"><em class="fa fa-cogs">&nbsp;</em><strong> Engineering Track</strong></a></li>
 			<li  style="padding:2%;"><button style="width:100%; padding: 5% 0 5% 0;"id="T2" value="Science" class="btn btn-info tt"><em class="fa fa-flask">&nbsp;</em><strong> Science Track</strong></button></li>
 			<li style="padding:2%;"><button style="width:100%; padding: 5% 0 5% 0;" id="T3" value="Management"  class="btn btn-info tt"><em class="fa fa-area-chart">&nbsp;</em><strong> Management Track</strong></button></li>
@@ -175,7 +175,7 @@ else
 	<table class="table table-hover" id="info-table">
 		<thead>
 			<tr>
-				<th class="text-center">Sr. No.</th>
+				<th class="text-center">Paper Id</th>
 				<th>Name of Author</th>
 				<th class="text-center">Paper Title</th>
 				<th class="text-center">Paper Track</th>
@@ -233,7 +233,7 @@ else
 		
 		echo '
 			<tr>
-				<td class="text-center">'.($i+1).'</td>
+				<td class="text-center">'.$row['submission_id'].'</td>
 				<td>'.$row['r_name'].'</td>
 				<td class="text-center">'.$row['title'].'</button></td>
 				<td class="text-center">'.$row['submission_track'].'</td>

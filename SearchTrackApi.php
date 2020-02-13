@@ -25,7 +25,7 @@ if(isset($_GET['trackName'])){
 	if (!$con) {
 		die("Connection failed: " . mysqli_connect_error());
 	}
-	$query = "SELECT researcher_info.r_name,researcher_info.email,submissions.title,submissions.no_of_pages,submissions.submission_track,submissions.No_of_authors,submissions.submission_time,submissions.submitted_file_name FROM submissions INNER JOIN researcher_info 
+	$query = "SELECT researcher_info.r_name,researcher_info.email,submissions.title,submissions.submission_id,submissions.no_of_pages,submissions.submission_track,submissions.No_of_authors,submissions.submission_time,submissions.submitted_file_name FROM submissions INNER JOIN researcher_info 
 	ON researcher_info.researcher_id = submissions.researcher_id WHERE submissions.submission_track='$track';";
 	/* $query2 = "SELECT * FROM `researcher_info`;"; */
     $result = mysqli_query($con,$query) or die(mysqli_error($con));
@@ -35,7 +35,7 @@ if(isset($_GET['trackName'])){
 		
 		echo '
 			<tr>
-				<td class="text-center">'.($i+1).'</td>
+				<td class="text-center">'.$row['submission_id'].'</td>
 				<td>'.$row['r_name'].'</td>
 				<td class="text-center">'.$row['title'].'</button></td>
                 <td class="text-center">'.$row['submission_track'].'</td>

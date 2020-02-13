@@ -240,7 +240,7 @@ else
 				<td class="text-center">'.$row['email'].'</td>
 				<td class="text-center">'.$row['No_of_authors'].'</td>
 				<td class="text-center">'.$row['submission_time'].'</td>
-				<td class="text-center"><a class="btn btn-outline-danger btn-circle" target="_blank" href="http://52.206.184.26/paper/Uploads/'.$row['submitted_file_name'].'"><i class="fa fa-download"></i></a></td>
+				<td class="text-center"><a class="btn btn-outline-danger btn-circle" target="_blank" href="http://52.206.184.26/paper_submission/Uploads/'.$row['submitted_file_name'].'"><i class="fa fa-download"></i></a></td>
 				';
 				echo '
 
